@@ -20,12 +20,13 @@
       <label id="to-label">To:</label>
       <input
         type="datetime-local"
-        v-model.trim="data_email_to_time"
+        v-model.trim="data_to_time"
         placeholder=" "
         aria-labelledby="to-label"
         required="true"
       />
       <button type="submit" id="submit-button">Submit</button>
+       <button type="reset" id="reset-button" @click="resetInputs">Reset</button>
     </form>
 
     <div class="submit-info">{{submitMessage}}</div>
@@ -45,7 +46,7 @@ export default {
     return {
       data_email: "",
       data_from_time: "",
-      data_email_to_time: "",
+      data_to_time: "",
       submitMessage: DEFAULT_MESSAGE,
       timeRecords: []
     };
@@ -58,13 +59,19 @@ export default {
   },
   mounted() {
     this.data_from_time = new Date();
-    this.data_email_to_time = new Date();
+    this.data_to_time = new Date();
   },
   methods: {
     pushQuery() {
       if (this.query != this.$route.query.q) {
         this.$router.push({ query: { q: this.query } });
       }
+    },
+    resetInputs() {
+      this.query = "";
+      this.data_email = "";
+      this.data_from_time = "";
+      this.data_to_time = "";
     },
     submit() {
       this.timeRecords = [];
@@ -120,12 +127,17 @@ input[type="submit"] {
 }
 
 .entry-form input {
-  width: 100%;
+  width: 300px;
   display: grid;
   grid-gap: 50px 50px;
   justify-content: center;
   align-items: center;
   grid-template-columns: repeat(4, auto-fit);
+}
+
+.entry-form button {
+  width: 100%;
+  margin-right: 0.5em;
 }
 
 @media (max-width: 600px) {

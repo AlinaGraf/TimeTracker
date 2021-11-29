@@ -4,57 +4,51 @@
       <label id="employee-email-label">Email address:</label>
       <input
         type="email"
-        v-model.trim="query1"
+        v-model.trim="emailQuery"
         placeholder="employee email address"
         aria-labelledby="employee-email-label"
       />
-       <label id="offset-label">Offset:</label>
+      <label id="offset-label">Offset:</label>
       <input
         type="number"
-        v-model.trim="query2"
+        v-model.trim="offsetQuery"
         placeholder="skip first # entries"
         aria-labelledby="offset-label"
+        min="1"
       />
-       <label id="length-label">Number of records:</label>
+      <label id="length-label">Number of records:</label>
       <input
         type="number"
-        v-model.trim="query3"
+        v-model.trim="lengthQuery"
         placeholder="limit number of entries in result"
         aria-labelledby="length-label"
+        min="1"
       />
       <button type="submit" id="search-button">Search</button>
+      <button type="reset" id="reset-button" @click="resetQuery">Reset</button>
     </form>
-  
-  <div class="search-info">{{searchMessage}}</div>
 
+    <div class="search-info">{{searchMessage}}</div>
 
     <ul id="timeRecordList" class="timeRecordList">
-       <li v-for="timeRecord in timeRecords" :key="timeRecord.start"> 
-        {{ timeRecord.email }}
-     </li>
+      <li v-for="timeRecord in timeRecords" :key="timeRecord.start">{{ timeRecord.email }}</li>
     </ul>
-
   </main>
-
-
-
 </template>
 
 <script>
 import * as TimeTrackerService from "@/services/TimeTrackerService";
 
-const DEFAULT_MESSAGE = "Search for or log employee time records.";
+const DEFAULT_MESSAGE = "Search for time records.";
 
 export default {
   name: "Search",
-  components: {
-    
-  },
+  components: {},
   data() {
     return {
-      query1: "",
-      query2: "",
-      query3: "",
+      emailQuery: "",
+      offsetQuery: "",
+      lengthQuery: "",
       searchMessage: DEFAULT_MESSAGE,
       timeRecords: []
     };
@@ -67,13 +61,41 @@ export default {
   },
   mounted() {
     this.query = this.$route.query.q;
-   
   },
   methods: {
     pushQuery() {
+      this.query = "";
+
+      if (this.emailQuery) {
+        this.query = this.query + "email=" + this.emailQuery;
+      }
+      if (this.offsetQuery) {
+        this.query =
+          (this.emailQuery ? this.query + "&" : this.query) +
+          "offset=" +
+          this.offsetQuery;
+      }
+      if (this.lengthQuery) {
+        this.query =
+          (this.emailQuery || this.offsetQuery
+            ? this.query + "&"
+            : this.query) +
+          "length=" +
+          this.lengthQuery;
+      }
+
+      console.log(this.query);
+
       if (this.query != this.$route.query.q) {
         this.$router.push({ query: { q: this.query } });
       }
+    },
+    resetQuery() {
+      this.query = "";
+      this.emailQuery = "";
+      this.offsetQuery = "";
+      this.lengthQuery = "";
+      this.$router.push({ query: { q: this.query } });
     },
     search() {
       this.timeRecords = [];
@@ -97,19 +119,6 @@ export default {
 </script>
 
 <style>
-input[type="search"] {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-color: white;
-  border: none;
-  padding-left: 0.5em;
-  margin: 0;
-  font-family: inherit;
-  font-size: 1em;
-  height: 2.5rem;
-  width: 100%;
-}
-
 
 
 ::placeholder {
@@ -131,12 +140,12 @@ input[type="search"] {
 }
 
 .search-form input {
-  width: 100%;
+  width: 300px;
   display: grid;
   grid-gap: 50px 50px;
   justify-content: center;
   align-items: center;
-  grid-template-columns: repeat(1, 300px);
+  grid-template-columns: 60px 240px;
 }
 
 @media (max-width: 600px) {
@@ -162,6 +171,4 @@ input[type="search"] {
   justify-content: center;
   align-items: center;
 }
-
-
 </style>
