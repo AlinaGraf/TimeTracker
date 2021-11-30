@@ -2,55 +2,52 @@
   <main>
     <form role="search" class="search-form" @submit.prevent="pushQuery">
       <label id="employee-email-label">Email address:</label>
-      <input
-        type="email"
-        v-model.trim="emailQuery"
-        placeholder="employee email address"
-        aria-labelledby="employee-email-label"
-      />
+      <input class="formInput" type="email" v-model.trim="emailQuery" placeholder="employee email address" aria-labelledby="employee-email-label"/>
+      
       <label id="offset-label">Offset:</label>
-      <input
-        type="number"
-        v-model.trim="offsetQuery"
-        placeholder="skip first # entries"
-        aria-labelledby="offset-label"
-        min="1"
-      />
+      <input class="formInput" type="number" v-model.trim="offsetQuery" placeholder="skip first # entries" aria-labelledby="offset-label" min="0"/>
+
       <label id="length-label">Number of records:</label>
-      <input
-        type="number"
-        v-model.trim="lengthQuery"
-        placeholder="limit number of entries in result"
-        aria-labelledby="length-label"
-        min="1"
-      />
+      <input class="formInput" type="number" v-model.trim="lengthQuery" placeholder="limit number of entries in result" aria-labelledby="length-label" min="1"/>
+      
       <button type="submit" id="search-button">Search</button>
       <button type="reset" id="reset-button" @click="resetQuery">Reset</button>
     </form>
 
     <div class="search-info">{{searchMessage}}</div>
 
-    <ul id="timeRecordList" class="timeRecordList">
-      <li v-for="timeRecord in timeRecords" :key="timeRecord.start">{{ timeRecord.email }}</li>
-    </ul>
+    <section class="gallery" v-if="showResults">
+      <div>
+        <span>email</span> | <span>start</span> | <span>end</span>
+      </div>
+      <time-record
+          v-for="timeRecord in timeRecords"
+          :key="timeRecord.start"
+        />
+    </section>
+
   </main>
 </template>
 
 <script>
 import * as TimeTrackerService from "@/services/TimeTrackerService";
+import TimeRecord from "@/components/TimeRecord";
 
 const DEFAULT_MESSAGE = "Search for time records.";
 
 export default {
   name: "Search",
-  components: {},
+  components: {
+    TimeRecord
+  },
   data() {
     return {
       emailQuery: "",
       offsetQuery: "",
       lengthQuery: "",
       searchMessage: DEFAULT_MESSAGE,
-      timeRecords: []
+      timeRecords: [],
+      showResults: false,
     };
   },
   watch: {
@@ -61,20 +58,37 @@ export default {
   },
   mounted() {
     this.query = this.$route.query.q;
+    this.search();
   },
   methods: {
     pushQuery() {
       this.query = "";
 
+      this.addEmailToQuery();
+      this.addOffsetToQuery();
+      this.addLengthToQuery();
+
+      if (this.query != this.$route.query.q) {
+        this.$router.push({ query: { q: this.query } });
+      }
+    },
+
+    addEmailToQuery(){
       if (this.emailQuery) {
         this.query = this.query + "email=" + this.emailQuery;
       }
+    },
+
+    addOffsetToQuery(){
       if (this.offsetQuery) {
         this.query =
           (this.emailQuery ? this.query + "&" : this.query) +
           "offset=" +
           this.offsetQuery;
       }
+    },
+
+    addLengthToQuery(){
       if (this.lengthQuery) {
         this.query =
           (this.emailQuery || this.offsetQuery
@@ -83,13 +97,8 @@ export default {
           "length=" +
           this.lengthQuery;
       }
-
-      console.log(this.query);
-
-      if (this.query != this.$route.query.q) {
-        this.$router.push({ query: { q: this.query } });
-      }
     },
+
     resetQuery() {
       this.query = "";
       this.emailQuery = "";
@@ -97,30 +106,43 @@ export default {
       this.lengthQuery = "";
       this.$router.push({ query: { q: this.query } });
     },
+
     search() {
       this.timeRecords = [];
+      this.setStatusMessage();     
+      // console.log(this.query);
 
-      if (this.query) {
+      TimeTrackerService.getTimeRecords(this.query).then(timeRecords => {
+        this.timeRecords = timeRecords;
+        // console.log(this.timeRecords);
+          if (this.query) { 
+            this.displayResults();
+             this.showResults=true;
+        }
+      } );
+    },
+
+    displayResults(){
+      const s = this.timeRecords.length == 1 ? "" : "s";
+        this.searchMessage = `Found ${this.timeRecords.length} timeRecord${s} for ${this.query}`;
+        if (this.timeRecords.length > 0) {
+            this.showResults=true;
+        }
+    },
+
+    setStatusMessage(){
+        if (this.query) {
         this.searchMessage = `Searching for ${this.query}`;
       } else {
         this.searchMessage = DEFAULT_MESSAGE;
       }
-
-      TimeTrackerService.getTimeRecords(this.query).then(timeRecords => {
-        this.timeRecords = timeRecords;
-        if (this.query) {
-          const s = this.timeRecords.length == 1 ? "" : "s";
-          this.searchMessage = `Found ${this.timeRecords.length} timeRecord${s} for ${this.query}`;
-        }
-      });
     }
+     
   }
 };
 </script>
 
 <style>
-
-
 ::placeholder {
   color: var(--primary-color);
   opacity: 0.5;
@@ -136,16 +158,21 @@ export default {
 .search-form {
   display: flex;
   justify-content: center;
-  width: 500px;
+  flex-direction: column;
+  width: 300px;
 }
 
-.search-form input {
-  width: 300px;
-  display: grid;
-  grid-gap: 50px 50px;
-  justify-content: center;
+.search-form .formInput {
   align-items: center;
-  grid-template-columns: 60px 240px;
+  justify-content: center;
+  margin-bottom:0.5em;
+  width: 100%;
+  height:2em;
+}
+
+.search-form button {
+	width: 100%;
+	margin-bottom: 0.5em;
 }
 
 @media (max-width: 600px) {
