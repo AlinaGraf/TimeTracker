@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <artmart-header />
+  <div id="app">
+    <header />
     <router-view ></router-view>
   </div>
 </template>
@@ -11,7 +11,7 @@ import Header from "@/components/Header";
 export default {
   name: "App",
   components: {
-    "artmart-header": Header
+    "header": Header
   },
   computed: {
    
