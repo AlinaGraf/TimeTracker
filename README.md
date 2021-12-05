@@ -1,5 +1,7 @@
 # TimeTracker
 
+compatible node version: 16.13.0 
+
 run with: 
    > npm install
    > npm run serve

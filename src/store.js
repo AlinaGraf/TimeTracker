@@ -4,7 +4,7 @@ import * as TimeTrackerService from "@/services/TimeTrackerService";
 export default function buildStore() {
   return new Vuex.Store({
     state: {
-      records: []            // Array of records
+      records: []
     },
     actions: {
       async loadRecords(context) {

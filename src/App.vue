@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <header />
+    <header-timetracker />
     <router-view ></router-view>
   </div>
 </template>
@@ -11,7 +11,7 @@ import Header from "@/components/Header";
 export default {
   name: "App",
   components: {
-    "header": Header
+    "header-timetracker": Header
   },
   computed: {
    
