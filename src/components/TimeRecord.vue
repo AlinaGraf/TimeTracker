@@ -1,8 +1,9 @@
 <template>
-	<div class="timeRecord">
-		<!-- <span>{{timeRecord.email}}</span> | <span>{{timeRecord.start}}</span> | <span>{{timeRecord.end}}</span> -->
-    <span>timeRecord.email</span> | <span>timeRecord.start</span> | <span>timeRecord.end</span>
-	</div>
+  <div>
+    <span>{{timeRecord.email}}</span> |
+    <span>{{timeRecord.start}}</span> |
+    <span>{{timeRecord.end}}</span>
+  </div>
 </template>
 
 <script>
@@ -14,7 +15,7 @@ export default {
       start: Date,
       end: Date
     }
-  },
+  }
 };
 </script>
 

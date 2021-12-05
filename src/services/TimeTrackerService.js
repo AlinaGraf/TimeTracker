@@ -1,4 +1,4 @@
-const TIME_TRACKER_BASE_URL = 'http://localhost:8080';
+const TIME_TRACKER_BASE_URL = process.env.TIME_TRACKER_URL ? process.env.TIME_TRACKER_URL : 'http://localhost:8080';
 
 export async function getTimeRecords(query = '') {
     const q = query.trim() == '' ? '' : '?' + query.trim();
@@ -7,16 +7,14 @@ export async function getTimeRecords(query = '') {
         redirect: 'follow',
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json'
         },
     };
-    var res = [];
-    fetch(TIME_TRACKER_BASE_URL + '/records' + q, requestOptions)
-        .then(response => response.text())
-        .then(result => res = result.json())
-        .catch(error => console.log('error', error));
 
-    return res;
+    var results = [];
+    await fetch(TIME_TRACKER_BASE_URL + '/records' + q, requestOptions)
+        .then(response => results = response.json())
+        .catch(error => console.log('error', error));
+    return results;
 }
 
 export async function addTimeRecord(record) {
