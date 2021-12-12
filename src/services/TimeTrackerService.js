@@ -1,4 +1,4 @@
-const TIME_TRACKER_BASE_URL = process.env.TIME_TRACKER_URL ? process.env.TIME_TRACKER_URL : 'http://localhost:8080';
+const TIME_TRACKER_BASE_URL = process.env.TIME_TRACKER_URL ? process.env.TIME_TRACKER_URL : 'http://localhost:8082';
 
 export async function getTimeRecords(query = '') {
     const q = query.trim() == '' ? '' : '?' + query.trim();

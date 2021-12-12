@@ -80,7 +80,6 @@ export default {
   },
   mounted() {
     this.query = this.$route.query.q;
-    this.search();
   },
   methods: {
     pushQuery() {

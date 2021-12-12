@@ -24,7 +24,6 @@ import * as TimeTrackerService from "@/services/TimeTrackerService";
 const DEFAULT_MESSAGE = "Submit new time record.";
 const SUCCESS_MESSAGE = "TimeRecord logged successfully.";
 const FAIL_MESSAGE = "TimeRecord could not be logged due to an error.";
-const ERROR_FUTURE_TIMES_MESSAGE = "The date / time cannot be in the future.";
 const ERROR_END_TIME_BEFORE_START_MESSAGE = "The end time cannot be before the start time.";
 
 export default {
@@ -57,16 +56,14 @@ export default {
 
       const from = new Date();
       from.setTime(Date.parse(this.data_from_time));
-      this.startTime = from.getUTCDate() + '.' + (from.getUTCMonth()+1) + '.' + from.getUTCFullYear() + ' ' + from.getUTCHours() + ':' + from.getUTCMinutes(); 
+      this.startTime = from.getDate() + '.' + (from.getMonth()+1) + '.' + from.getFullYear() + ' ' + from.getHours() + ':' + from.getMinutes(); 
 
       const to = new Date();
       to.setTime(Date.parse(this.data_to_time));
-      this.endTime = to.getUTCDate() + "." + (to.getUTCMonth()+1) + "." + to.getUTCFullYear() +" "+to.getUTCHours() + ":" + to.getUTCMinutes(); 
+      this.endTime = to.getDate() + "." + (to.getMonth()+1) + "." + to.getFullYear() +" "+to.getHours() + ":" + to.getMinutes(); 
 
 
-      if(from > now || to > now){
-        this.submitMessage = ERROR_FUTURE_TIMES_MESSAGE;
-      } else if (from > to) {
+      if (from > to) {
         this.submitMessage = ERROR_END_TIME_BEFORE_START_MESSAGE;
       } else {
         this.createRequestBody();
